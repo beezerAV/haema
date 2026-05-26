@@ -1480,12 +1480,12 @@ For unit conversions, use these standards:
     }, 600);
 
   } catch (err) {
-    addLog('Error: ' + err.message);
-    showToast(err.message, 'error');
+    addLog('Error: ' + err.name + ': ' + err.message);
+    showToast(err.name + ': ' + err.message, 'error');
     setTimeout(() => {
       if (records.length > 0) showDashboard();
       else showView('upload');
-    }, 3000);
+    }, 6000);
   }
 }
 
