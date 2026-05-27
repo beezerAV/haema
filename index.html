@@ -1279,7 +1279,7 @@ window.addEventListener('DOMContentLoaded', () => {
   dz.addEventListener('drop', e => {
     e.preventDefault(); dz.classList.remove('dragover');
     const file = e.dataTransfer.files[0];
-    if (file) processFile(file);
+    if (file) setTimeout(() => processFile(file), 50);
   });
 });
 
@@ -1340,7 +1340,7 @@ function switchDashTab(t) {
 function handleFile(e) {
   const file = e.target.files[0];
   e.target.value = '';
-  if (file) processFile(file);
+  if (file) setTimeout(() => processFile(file), 50);
 }
 
 async function processFile(file) {
