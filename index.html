@@ -1366,9 +1366,9 @@ async function processFile(file) {
       content = await fileToBase64(file);
       mediaType = 'application/pdf';
     } else {
-      addLog('Encoding image…');
-      content = await fileToBase64(file);
-      mediaType = file.type;
+      addLog('Resizing image for upload…');
+      content = await resizeImageToBase64(file, 1600);
+      mediaType = 'image/jpeg';
     }
 
     addLog('Sending to Claude for analysis…');
@@ -1497,6 +1497,28 @@ function fileToBase64(file) {
     r.readAsDataURL(file);
   });
 }
+function resizeImageToBase64(file, maxSize) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+        else { w = Math.round(w * maxSize / h); h = maxSize; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      res(dataUrl.split(',')[1]);
+    };
+    img.onerror = () => rej(new Error('Image load failed'));
+    img.src = url;
+  });
+}
+
 
 // ─────────────────────────────────────────────
 // Dashboard rendering
